@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Productivity App',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.teal,
       ),
       home: const HomeScreen(),
       debugShowCheckedModeBanner: false,
@@ -43,54 +43,57 @@ class HomeScreen extends StatelessWidget {
             end: Alignment.bottomRight,
           ),
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text(
-              'Boost Your Productivity',
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                'Boost Your Productivity',
+                style: TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
               ),
-            ),
-            const SizedBox(height: 20),
-            _buildMenuButton(
-              context,
-              title: 'Full-Screen Clock',
-              icon: Icons.access_time,
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const ClockScreen()),
-                );
-              },
-            ),
-            const SizedBox(height: 15),
-            _buildMenuButton(
-              context,
-              title: 'Timer',
-              icon: Icons.timer,
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const TimerScreen()),
-                );
-              },
-            ),
-            const SizedBox(height: 15),
-            _buildMenuButton(
-              context,
-              title: 'Stopwatch',
-              icon: Icons.watch_later,
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const StopwatchScreen()),
-                );
-              },
-            ),
-          ],
+              const SizedBox(height: 40),
+              _buildMenuButton(
+                context,
+                title: 'Full-Screen Clock',
+                icon: Icons.access_time,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const ClockScreen()),
+                  );
+                },
+              ),
+              const SizedBox(height: 20),
+              _buildMenuButton(
+                context,
+                title: 'Timer',
+                icon: Icons.timer,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const TimerScreen()),
+                  );
+                },
+              ),
+              const SizedBox(height: 20),
+              _buildMenuButton(
+                context,
+                title: 'Stopwatch',
+                icon: Icons.watch_later,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const StopwatchScreen()),
+                  );
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -98,27 +101,39 @@ class HomeScreen extends StatelessWidget {
 
   Widget _buildMenuButton(BuildContext context,
       {required String title, required IconData icon, required VoidCallback onTap}) {
-    return ElevatedButton.icon(
-      onPressed: onTap,
-      style: ElevatedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-        backgroundColor: Colors.white.withOpacity(0.9),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        elevation: 6,
+    return Card(
+      elevation: 8,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
       ),
-      icon: Icon(
-        icon,
-        color: Colors.teal,
-        size: 28,
-      ),
-      label: Text(
-        title,
-        style: const TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.w500,
-          color: Colors.teal,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(15),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(15),
+            color: Colors.white.withOpacity(0.9),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Icon(
+                icon,
+                color: Colors.teal,
+                size: 30,
+              ),
+              const SizedBox(width: 20),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.teal,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
