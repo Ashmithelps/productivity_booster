@@ -8,28 +8,43 @@ class TimerScreen extends StatefulWidget {
   _TimerScreenState createState() => _TimerScreenState();
 }
 
-class _TimerScreenState extends State<TimerScreen> {
+class _TimerScreenState extends State<TimerScreen> with TickerProviderStateMixin {
   Timer? _timer;
   Duration _duration = const Duration(); // Timer duration
   Duration _remainingTime = const Duration(); // Remaining time for the countdown
   bool _isRunning = false; // To check if the timer is running
   bool _timerCompleted = false; // To check if the timer has completed
   TextEditingController _timeController = TextEditingController(); // For time input
+  AnimationController? _animationController; // For countdown animation
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 1),
+    );
+  }
 
   void _startTimer() {
     if (_remainingTime.inSeconds > 0 && !_isRunning) {
       setState(() {
         _isRunning = true;
         _timerCompleted = false;
+        _animationController?.duration = _remainingTime; // Set duration for animation
+        _animationController?.forward(from: 0); // Start animation
       });
       _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
         setState(() {
           if (_remainingTime.inSeconds > 0) {
             _remainingTime -= const Duration(seconds: 1);
+            _animationController?.forward(from: 0);
           } else {
             _stopTimer();
             setState(() {
               _timerCompleted = true;
+              _animationController?.stop();
+              // Add sound notification here if needed
             });
           }
         });
@@ -42,6 +57,7 @@ class _TimerScreenState extends State<TimerScreen> {
       _timer?.cancel();
       setState(() {
         _isRunning = false;
+        _animationController?.stop();
       });
     }
   }
@@ -51,6 +67,7 @@ class _TimerScreenState extends State<TimerScreen> {
     setState(() {
       _remainingTime = _duration;
       _timerCompleted = false;
+      _animationController?.reset();
     });
   }
 
@@ -61,7 +78,14 @@ class _TimerScreenState extends State<TimerScreen> {
         _duration = Duration(seconds: seconds);
         _remainingTime = _duration;
         _timerCompleted = false;
+        _animationController?.duration = _duration; // Update animation duration
+        _animationController?.reset(); // Reset animation
       });
+    } else {
+      // Show a Snackbar for invalid input
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a valid time greater than 0.')),
+      );
     }
   }
 
@@ -77,6 +101,7 @@ class _TimerScreenState extends State<TimerScreen> {
   void dispose() {
     _timer?.cancel();
     _timeController.dispose();
+    _animationController?.dispose();
     super.dispose();
   }
 
@@ -85,13 +110,13 @@ class _TimerScreenState extends State<TimerScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Timer'),
-        backgroundColor: Colors.teal,
+        backgroundColor: Colors.blue[800], // Deep Blue
       ),
       body: Container(
         padding: const EdgeInsets.all(16.0),
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.teal, Colors.cyan],
+            colors: [Colors.blue, Colors.lightBlueAccent], // Deep Blue to Light Blue
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -107,6 +132,16 @@ class _TimerScreenState extends State<TimerScreen> {
                 fontWeight: FontWeight.bold,
                 color: Colors.red,
               ),
+            ),
+            const SizedBox(height: 20),
+            // Circular countdown progress indicator
+            CircularProgressIndicator(
+              value: _isRunning && !_timerCompleted
+                  ? _remainingTime.inSeconds / _duration.inSeconds
+                  : null,
+              backgroundColor: Colors.grey,
+              color: Colors.green,
+              strokeWidth: 10,
             ),
             const SizedBox(height: 20),
             // TextField to input time
@@ -127,7 +162,7 @@ class _TimerScreenState extends State<TimerScreen> {
             ElevatedButton(
               onPressed: _setTimerDuration,
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
+                backgroundColor: Colors.blue[600], // A lighter blue
                 padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
               ),
               child: const Text('Set Timer'),
